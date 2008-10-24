@@ -108,11 +108,19 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     #the only way to print is the cipher vs english, grouped by letter
     #but more options will be added later, so this functions should stay existing
     try:
-      import freqanalysis
-      m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
-      m.printEnglishvFreq() 
+      import freqanalysis, os
+      newpid = os.fork()
+      #fork a new process so the graph doesn't tie up the shell
+      if newpid == 0:
+        m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
+        m.printEnglishvFreq() 
+        sys.exit()
+    except SystemExit:
+      print "graph exited" 
+      sys.exit()
     except:
-      print "Error: check that numpy and matplotlib are installed"
+      print """Error: check that numpy and matplotlib are installed
+    you also probably can't use windows because there is a fork"""
       print sys.exc_info()[0]
 
   def PrintUsage(self):
