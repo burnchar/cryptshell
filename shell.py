@@ -433,9 +433,14 @@ def enigmaUsage():
 
 if __name__ == '__main__':
 
-  #this needs to be improved by quality assurance
-  letterlist = open(sys.argv[1]).read()
+  try:
+    letterlist = open(sys.argv[1]).read()
+  except IndexError:
+    print 'Error, you must include a file when running this shell'
+    exit(1)
+
   rootphrase = cryptanal.CryptAnal(letterlist) 
  
   thisshell = shell(rootphrase)
   thisshell.mainloop()
+
