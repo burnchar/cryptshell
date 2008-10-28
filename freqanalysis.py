@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
 import numpy 
-import matplotlib.pyplot as plt
+try:
+	import matplotlib.pyplot as plt
+except:
+	pass
+
 
 #hard coded frequencies of languages
 EnglishFreqTable = {
