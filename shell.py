@@ -118,7 +118,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # This is a function for printing graphs.
   # Right now, it is overly-simplified.
   # The only way to print is the cipher vs
-  # english, grouped by letter. Mor options
+  # english, grouped by letter. More options
   # will be added later.
   ############################################
   def PrintGraph(self):
