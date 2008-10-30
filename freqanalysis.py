@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-import numpy 
+import numpy
 try:
-	import matplotlib.pyplot as plt
+  import matplotlib.pyplot as plt
 except:
-	pass
+  print "Warning: matplotlib.pyplot is not available."
 
 
 #hard coded frequencies of languages
@@ -12,7 +12,7 @@ EnglishFreqTable = {
   'a': .08167,
   'b': .01492,
   'c': .02782,
-  'd': .04253,  
+  'd': .04253,
   'e': .12702,
   'f': .02228,
   'g': .02015,
@@ -59,12 +59,12 @@ def autolabel(rects):
 
 def listequalizer(list1, list2):
   for i in list1:
-    if i[0] not in [a for a,b in list2]: 
+    if i[0] not in [a for a,b in list2]:
       list2.append((i[0],0))
   for i in list2:
     if i[0] not in [a for a,b in list1]:
       list1.append((i[0],0))
-  return len(list1) 
+  return len(list1)
 
 class xfrequencyTable():
   def __init__(self, freqdict, width=.35):
@@ -87,25 +87,28 @@ class xfrequencyTable():
     englishFreq.sort()
     cipherFreq.sort()
     ind = numpy.arange(self.N)
-    plt.subplot(111)
-    rects1 = plt.bar(ind,[b for a, b in englishFreq], self.width, color='r')
-    rects2 = plt.bar(ind+self.width,[b for a,b in cipherFreq], self.width, color='y')
-    #add some labels for our line graph
-    plt.ylabel("Frequency")
-    plt.title("Frequency of English vs Ciphertext")
-    #this is the labeling for the bottom - may need fixing
-    plt.xticks(ind+self.width, [a for a,b in englishFreq] ) 
-    plt.legend( (rects1[0], rects2[0]), ("English", "Cipher") )
-    #apply the labels
-    autolabel(rects1)
-    autolabel(rects2)
-    #set this soon
-    xmin, xmax, ymin, ymax = plt.axis()
-    plt.ylim(0, ymax + .03)  
-    #I would like to make these bigger, but they must be set in the backend
-    #therefore, for the sake of being portable, I'll just leave it for now
-    #they can always be resized
-    plt.show()   
+    try:
+      plt.subplot(111)
+      rects1 = plt.bar(ind,[b for a, b in englishFreq], self.width, color='r')
+      rects2 = plt.bar(ind+self.width,[b for a,b in cipherFreq], self.width, color='y')
+      #add some labels for our line graph
+      plt.ylabel("Frequency")
+      plt.title("Frequency of English vs Ciphertext")
+      #this is the labeling for the bottom - may need fixing
+      plt.xticks(ind+self.width, [a for a,b in englishFreq] )
+      plt.legend( (rects1[0], rects2[0]), ("English", "Cipher") )
+      #apply the labels
+      autolabel(rects1)
+      autolabel(rects2)
+      #set this soon
+      xmin, xmax, ymin, ymax = plt.axis()
+      plt.ylim(0, ymax + .03)
+      #I would like to make these bigger, but they must be set in the backend
+      #therefore, for the sake of being portable, I'll just leave it for now
+      #they can always be resized
+      plt.show()
+    except NameError:
+      print "Warning: matplotlib.pyplot is not available."
 
 if __name__ == "__main__":
   import cryptanal, pickle, sys
@@ -114,7 +117,7 @@ if __name__ == "__main__":
     'r': .08167,
     'b': .01492,
     'l': .02782,
-    'd': .24253,  
+    'd': .24253,
     'f': .12228,
     'g': .02015,
     'h': .06094,
@@ -137,8 +140,8 @@ if __name__ == "__main__":
     'B': 0,
     'C': 0,
     'E': .1 }
-  
+
   cipherFreqTable = pickle.loads(sys.argv[1])
 
   m = xfrequencyTable(cipherFreqTable)
-  m.printEnglishvFreq()  
+  m.printEnglishvFreq()
