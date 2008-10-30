@@ -101,18 +101,21 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   ############################################
   def Print(self, args):
     printhelp = 0
-    if args.strip() == "current":
-      self.currcrypto.printcrypt()
-    elif args.strip() == "orig":
-      self.rootcrypto.printcrypt()
-    elif args.strip() == "freq":
-      self.currcrypto.printsorteddict()
-    elif args.strip() == "graph":
-      self.PrintGraph()
-    elif args.strip() == "help":
-      self.PrintUsage()
-    else:
-      self.PrintUsage()
+    try:
+      if args.strip() == "current":
+        self.currcrypto.printcrypt()
+      elif args.strip() == "orig":
+        self.rootcrypto.printcrypt()
+      elif args.strip() == "freq":
+        self.currcrypto.printsorteddict()
+      elif args.strip() == "graph":
+        self.PrintGraph()
+      elif args.strip() == "help":
+        self.PrintUsage()
+      else:
+        self.PrintUsage()
+    except AttributeError:
+      print "Please load a file first by typing \"load <file-name>\""
 
   ############################################
   # This is a function for printing graphs.
@@ -133,8 +136,11 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       if newpid == 0:
         #m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
         #m.printEnglishvFreq() 
-        os.execv("./freqanalysis.py", ["freqanalysis.py", pickle.dumps(self.currcrypto.getfreq())])
-        raise SystemExit
+        try:
+          os.execv("./freqanalysis.py", ["freqanalysis.py", pickle.dumps(self.currcrypto.getfreq())])
+          raise SystemExit
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
     except SystemExit:
        sys.exit()
     except:
@@ -185,7 +191,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       if subhelp == True:
         self.subUsage()
       else:
-        self.currcrypto.substitute(fromstr, tostr, startrange, endrange, jumpval)
+        try:
+          self.currcrypto.substitute(fromstr, tostr, startrange, endrange, jumpval)
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
     except:
       self.subUsage()
       return
@@ -238,7 +247,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       else:
         if shiftr != 0:
           shiftl = len(self.currcrypto.letterlist) - shiftr
-        self.currcrypto.transpose(shiftl, srange, endrange)
+        try:
+          self.currcrypto.transpose(shiftl, srange, endrange)
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
     except:
       self.transHelp()
       return
@@ -264,7 +276,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     if name is "":
       name = "out.txt"
     f=open(name, 'w')
-    f.write(self.currcrypto.getcrypt())
+    try:
+      f.write(self.currcrypto.getcrypt())
+    except AttributeError:
+      print "Please load a file first by typing \"load <file-name>\""
     f.close()
     print "Saved in " + name
 
@@ -284,15 +299,18 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # Front end for Substitution Cipher      
   ###########################################
   def substitution(self, args):
-    cryptToSend = self.currcrypto.getcrypt()
-    cryptToSend = cryptToSend.replace(' ', '')  # deleting all white space
+    try:
+      cryptToSend = self.currcrypto.getcrypt()
+      cryptToSend = cryptToSend.replace(' ', '')  # deleting all white space
 #    cryptToSend = cryptToSend.lower() # make all letters lower-case for comparison with english letter frequencies
-    sub = substitution.Substitution(cryptToSend)
-    cipherFreqTable = sub.getFreqTable()
-    freq = freqanalysis.xfrequencyTable(cipherFreqTable)
-    myNewText = freq.replaceAll()
-    sub.mainLoop()
-#    freqComparison = sub.getFrequency()
+      sub = substitution.Substitution(cryptToSend)
+      cipherFreqTable = sub.getFreqTable()
+      freq = freqanalysis.xfrequencyTable(cipherFreqTable)
+      myNewText = freq.replaceAll()
+      sub.mainLoop()
+#       freqComparison = sub.getFrequency()
+    except AttributeError:
+      print "Please load a file first by typing \"load <file-name>\""
 
   ###########################################
   # Front end for Vigenere Cipher
@@ -322,17 +340,20 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
           help = 1	
       if help == 1:
         self.vigUsage()
-      if doVigenere is True:  
-	vig = vigenere.Vigenere(self.currcrypto.getcrypt().strip(), key)      
-	if encrypt == 1 and decrypt == 1:
-	  #usage problem, -d and -e cannot be used at the same time
-          self.vigUsage()
-	elif encrypt == 1:
-	  res = vig.cypher()
-	  self.currcrypto.setcrypt(res)		 
-	elif decrypt == 1:
-	  res = vig.decypher()
-	  self.currcrypto.setcrypt(res)	
+      if doVigenere is True:
+        try:
+	  vig = vigenere.Vigenere(self.currcrypto.getcrypt().strip(), key)
+	  if encrypt == 1 and decrypt == 1:
+	    #usage problem, -d and -e cannot be used at the same time
+            self.vigUsage()
+	  elif encrypt == 1:
+	    res = vig.cypher()
+	    self.currcrypto.setcrypt(res)		 
+	  elif decrypt == 1:
+	    res = vig.decypher()
+	    self.currcrypto.setcrypt(res)	
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
       else:
         #at least -d or -e have to be used
         self.vigUsage()
@@ -423,12 +444,18 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     else:
       rt = rotor.newrotor(keys, rotors)
       if encryption == True:
-        self.currcrypto.setcrypt(rt.encrypt(self.currcrypto.getcrypt()))
-        print "Key and rotors are set to: " + keys + ", " + str(rotors)
+        try:
+          self.currcrypto.setcrypt(rt.encrypt(self.currcrypto.getcrypt()))
+          print "Key and rotors are set to: " + keys + ", " + str(rotors)
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
       else:
         if unknown == False:
-          self.currcrypto.setcrypt(rt.decrypt(self.currcrypto.getcrypt()))
-          print "Key and rotors are set to: " + keys + ", " + str(rotors)
+          try:
+            self.currcrypto.setcrypt(rt.decrypt(self.currcrypto.getcrypt()))
+            print "Key and rotors are set to: " + keys + ", " + str(rotors)
+          except AttributeError:
+            print "Please load a file first by typing \"load <file-name>\""
         else:
           # This loop will need to be run when searching for a decryptions configuration
           # loop through more than one word in a string.  
@@ -440,15 +467,18 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
             percentDen = 0
             rt = rotor.newrotor(keys, decriptIterator)
             # self.currcrypto.setcrypt(rt.decrypt(self.currcrypto.getcrypt()))
-            for word in rt.decrypt(self.currcrypto.getcrypt()).split():
-              if dictionary([word.lower().rstrip('.')]):
-                percentNum += 1
-              percentDen += 1
-            percent = (float(percentNum)/float(percentDen))*100
-            if percent > 50:
-              self.currcrypto.setcrypt(rt.decrypt(self.currcrypto.getcrypt()))
-              print "Key and rotors are set to: " + keys + ", " + str(decriptIterator)
-            decriptIterator += 1
+            try:
+              for word in rt.decrypt(self.currcrypto.getcrypt()).split():
+                if dictionary([word.lower().rstrip('.')]):
+                  percentNum += 1
+                percentDen += 1
+              percent = (float(percentNum)/float(percentDen))*100
+              if percent > 50:
+                self.currcrypto.setcrypt(rt.decrypt(self.currcrypto.getcrypt()))
+                print "Key and rotors are set to: " + keys + ", " + str(decriptIterator)
+              decriptIterator += 1
+            except AttributeError:
+              print "Please load a file first by typing \"load <file-name>\""
 
   ###########################################
   # Usage for enigma
