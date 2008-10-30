@@ -499,14 +499,14 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   ###########################################
   def enigmaUsage(self):
     print """Usage: enigma [-e | --encrypt] | [-d | --decrypt] [-u | --unknown] [-h | --help] [-k | --key cipherKey] [-r | --rotor cipherRotorNumber] "
-    -e, --encrypt                Encrypt input.  Can not be used with the -d switch.
-    -d, --decrypt                Decrypt input.  Can not be used with the -e switch.
-    -u, --unknown                Unknown rotor number for the given encrypted input.
-                                 Note this option only is used for decryption it has
-                                 no effect if the -e or --encrypt switchs are set.
-    -k, --key                    Set the key used to encrypt or decrypt an input (string).
-    -r, --rotors                 Set the number of rotors used to encrypt or decrypt an input (int).
-    -h, --help                   Print this screen.
+    -e, --encrypt    Encrypt input.  Can not be used with the -d switch.
+    -d, --decrypt    Decrypt input.  Can not be used with the -e switch.
+    -u, --unknown    Unknown rotor number for the given encrypted input.
+                     Note this option only is used for decryption it has
+                     no effect if the -e or --encrypt switchs are set.
+    -k, --key        Set the key used to encrypt or decrypt an input (string).
+    -r, --rotors     Set the number encryption/decryption rotors (int).
+    -h, --help       Print this screen.
   """
 
   ###########################################
@@ -516,6 +516,8 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     print args
     if args:
       self.analyzeUsage()
+
+    crypt = self.currcrypto.getcrypt()
 
   ###########################################
   # Usage for command: analyze
