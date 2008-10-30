@@ -125,6 +125,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     try:
       import freqanalysis, os, signal, pickle
       newpid = os.fork()
+      #zombies must be shot in the head
       def zombiekiller(a, b):
         os.wait()
       signal.signal(signal.SIGCHLD, zombiekiller)
