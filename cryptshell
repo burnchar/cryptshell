@@ -90,7 +90,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # This is the main help function
   ############################################
   def help(self, args):
-    print "HELP"
+    print "You can use anye of the following commands:"
+    for x in self.commands:
+      print x
+    print
 
   ############################################
   # This is a function for reverting back to
