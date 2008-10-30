@@ -231,9 +231,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     shiftl = 1
     shiftr = 0
     srange = 0
-    endrange = len(self.currcrypto.letterlist) - 1
     shifterrorcheck = 0
     try:
+      endrange = len(self.currcrypto.letterlist) - 1
       options, arguments = getopt.getopt(args, "l:r:s:e:j:", ["lshift=", "rshift=", "srange=", "endrange=", "help"])
       for o, a in options:
         if o in ("-l", "--lshift"):
@@ -261,10 +261,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       else:
         if shiftr != 0:
           shiftl = len(self.currcrypto.letterlist) - shiftr
-        try:
-          self.currcrypto.transpose(shiftl, srange, endrange)
-        except AttributeError:
-          print "Please load a file first by typing \"load <file-name>\""
+        self.currcrypto.transpose(shiftl, srange, endrange)
+    except AttributeError:
+      print "Please load a file first by typing \"load <file-name>\""
     except:
       self.transHelp()
       return
