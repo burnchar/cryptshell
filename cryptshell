@@ -51,8 +51,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     while 1:
       try:
         command=raw_input('> ').lstrip()
-        cmdl = command.lower()
-        if command.lower().startswith('help'):
+        cmdl = command.lower() # save typing
+        if not len(cmdl.strip()): # ignore press enter on blank line
+          pass
+        elif command.lower().startswith('help'):
           self.help(command[4:].lstrip())
         elif command.lower().startswith('save'):
           self.save(command[4:].lstrip())
