@@ -94,9 +94,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # This is the main help function
   ############################################
   def help(self, args):
-    print "You can use anye of the following commands:"
+    print "The following commands are available:"
     for x in self.commands:
-      print x
+      print " ", x
+    print "Try '<command> --help' for usage on a specific command."
     print
 
   ############################################
