@@ -4,7 +4,6 @@ import readline, sys, copy, getopt, collections, re
 import cryptanal
 import rotor, vigenere, substitution, freqanalysis
 
-
 """
 The shell class is the front end for cryptanal 
 and includes interfaces to the entire backend 
@@ -21,23 +20,23 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
                              TO CRYPTO-SHELL
   (Useful for deciphering what little Susie is writing to little Billy)
 """
-
-    #if this is none there should be a way to open a new one
     self.rootcrypto = cryptobj
     self.currcrypto = copy.deepcopy(cryptobj)
 
     #setup the tab completion information here
-    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution"]
+    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load"]
     readline.set_completer(self.completer)
     readline.parse_and_bind("tab: complete")
     
   ############################################
-  #Below is the main front-end interface
-  #including support for gnu readline 
-  #and print functions
+  # Below is the main front-end interface
+  # including support for gnu readline 
+  # and print functions
   ############################################
 
-  #completer funtion for tab complete
+  ############################################
+  # The function for tab-completion
+  ############################################
   def completer(self, word, index):
     matches = [c for c in self.commands if c.startswith(word)]
     try:
@@ -45,13 +44,15 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     except IndexError:
       pass
 
-  #this is the main event loop
+  ############################################
+  # The mainloop
+  ############################################
   def mainloop(self):
     while 1:
       command=raw_input('> ').lstrip()
       if command.lower().startswith('help'):
         self.help(command[4:].lstrip())
-      if command.lower().startswith('save'):
+      elif command.lower().startswith('save'):
         self.save(command[4:].lstrip())
       elif command.lower().startswith('revert'):
         self.Revert(command[6:].strip())
@@ -72,21 +73,32 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       elif command.lower().startswith('trans'):
         args = command[5:].split()
         self.transpose(args)
+      elif command.lower().startswith('load') or command.lower().startswith('open'):
+        args = command[4:].split()
+        self.load(args)
       elif command.strip().lower() == "quit" or command.strip().lower() == "exit":
         print "come again soon...  "
         sys.exit()
       else:
         print "Error: command not recognized: type 'help' for usage"
-     
-  #this is the main help function 
+
+  ############################################
+  # This is the main help function
+  ############################################
   def help(self, args):
     print "HELP"
 
-  #revert back to the original
+  ############################################
+  # This is a function for reverting back to
+  # the original text
+  ############################################
   def Revert(self, args):
     self.currcrypto = copy.deepcopy(self.rootcrypto)
 
-  #The print function will print the cipher in various ways
+  ############################################
+  # This is the print function which prints
+  # the cipher in each of the various ways
+  ############################################
   def Print(self, args):
     printhelp = 0
     if args.strip() == "current":
@@ -102,11 +114,14 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     else:
       self.PrintUsage()
 
+  ############################################
+  # This is a function for printing graphs.
+  # Right now, it is overly-simplified.
+  # The only way to print is the cipher vs
+  # english, grouped by letter. Mor options
+  # will be added later.
+  ############################################
   def PrintGraph(self):
-    #this for the printing graphs
-    #right now, it is overly-siplified
-    #the only way to print is the cipher vs english, grouped by letter
-    #but more options will be added later, so this functions should stay existing
     try:
       import freqanalysis, os
       newpid = os.fork()
@@ -123,6 +138,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     you also probably can't use windows because there is a fork"""
       print sys.exc_info()[0]
 
+  ############################################
+  # Usage for the different print options
+  ############################################
   def PrintUsage(self):
     print """Usage: print [current | orig | freq]
 
@@ -133,12 +151,12 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
 
   help			print this screen
   """
- 
-  ############################################
-  #Below are the Substitution an Transpose interfaces
-  #which are common to many cryptographic systems
-  ###########################################
 
+  ############################################
+  # Below are the Substitution an Transpose 
+  # interfaces which are common to many 
+  # cryptographic systems
+  ###########################################
   def sub(self, args): 
     #set default argumetns
     subhelp = False
@@ -168,6 +186,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       self.subUsage()
       return
 
+  ############################################
+  # Usage for the substitution commands
+  ############################################
   def subUsage(self):
     print """Usage: sub fromstring tostring [-s | --startrange startrange] [-e | --endrange endrange] [-j | --jumpval jumpvalue]
 
@@ -218,6 +239,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       self.transHelp()
       return
 
+  ############################################
+  # Usage for the transpose commands
+  ############################################
   def transHelp(self):
     print """Usage: trans [[-l --lshift value | -r --rshift value] [-s | --srange] [-e | --endrange] | --help]
 
@@ -227,13 +251,11 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   -e, --endrange	where to end transposing
   --help		print this message and exit
   """
- 
+
   ###########################################
-  #functions for saving, opening and reverting
-  #your analysis session
+  # This is a function for saving what
+  # has been done
   ###########################################
-  
-  #save a new version of what you've done
   def save(self, name):
     if name is "":
       name = "out.txt"
@@ -242,15 +264,21 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     f.close()
     print "Saved in " + name
 
-  #open a previous version
-  def open(self, name):
-    print "OPENING"
-  
   ###########################################
-  #front ends for specific ciphers      
+  # This is a function for loading a new file
   ###########################################
+  def load(self, args):
+    try:
+      letterlist = open(args[0]).read()
+      rootphrase = cryptanal.CryptAnal(letterlist)
+      self.rootcrypto = rootphrase
+      self.currcrypto = copy.deepcopy(rootphrase)
+    except IndexError:
+      print "> Error loading file"
 
-  #Substitution Cipher
+  ###########################################
+  # Front end for Substitution Cipher      
+  ###########################################
   def substitution(self, args):
     cryptToSend = self.currcrypto.getcrypt()
     cryptToSend = cryptToSend.replace(' ', '')  # deleting all white space
@@ -262,7 +290,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     sub.mainLoop()
 #    freqComparison = sub.getFrequency()
 
-  #The Vigenere cipher
+  ###########################################
+  # Front end for Vigenere Cipher
+  ###########################################
   def vigenere(self, args):
     usageProblem = False	
     try:
@@ -287,12 +317,12 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
         elif o in ("-h", "--help"):
           help = 1	
       if help == 1:
-        vigUsage()
+        self.vigUsage()
       if doVigenere is True:  
 	vig = vigenere.Vigenere(self.currcrypto.getcrypt().strip(), key)      
 	if encrypt == 1 and decrypt == 1:
 	  #usage problem, -d and -e cannot be used at the same time
-          vigUsage()
+          self.vigUsage()
 	elif encrypt == 1:
 	  res = vig.cypher()
 	  self.currcrypto.setcrypt(res)		 
@@ -301,9 +331,12 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
 	  self.currcrypto.setcrypt(res)	
       else:
         #at least -d or -e have to be used
-        vigUsage()
-  
-  def vigUsage():
+        self.vigUsage()
+
+  ###########################################
+  # Usage for vigenere commands
+  ###########################################  
+  def vigUsage(self):
     print """Usage: vigenere [-e | --encrypt] | [-d | --decrypt] [-h | --help] [-k | --key cipherKey] "
     -e, --encrypt                Encrypt input.  Can not be used with the -d switch.  
     -d, --decrypt                Decrypt input.  Can not be used with the -e switch.  
@@ -311,7 +344,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     -h, --help                   Print this screen.  
     """
 	
-  #The enigma cipher	
+  ###########################################
+  # Front end for Enigma cipher
+  ###########################################
   def enigma(self, args): 
     # Default values needed for syntax checking and -h options. 
     encipher = 0
@@ -380,7 +415,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
           print "The key (-k) must be specified, and the rotor (-r) must not be specified.  "
 
     if enigmaU is True:
-      enigmaUsage()
+      self.enigmaUsage()
     else:
       rt = rotor.newrotor(keys, rotors)
       if encryption == True:
@@ -411,6 +446,21 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
               print "Key and rotors are set to: " + keys + ", " + str(decriptIterator)
             decriptIterator += 1
 
+  ###########################################
+  # Usage for enigma
+  ###########################################
+  def enigmaUsage(self):
+    print """Usage: enigma [-e | --encrypt] | [-d | --decrypt] [-u | --unknown] [-h | --help] [-k | --key cipherKey] [-r | --rotor cipherRotorNumber] "
+    -e, --encrypt                Encrypt input.  Can not be used with the -d switch.
+    -d, --decrypt                Decrypt input.  Can not be used with the -e switch.
+    -u, --unknown                Unknown rotor number for the given encrypted input.
+                                 Note this option only is used for decryption it has
+                                 no effect if the -e or --encrypt switchs are set.
+    -k, --key                    Set the key used to encrypt or decrypt an input (string).
+    -r, --rotors                 Set the number of rotors used to encrypt or decrypt an input (int).
+    -h, --help                   Print this screen.
+  """
+
 def dictionary(words):
   model = collections.defaultdict(lambda: 1)
   ALLWORDS = re.findall('[a-z]+', file('/etc/dictionaries-common/words').read().lower())
@@ -418,29 +468,13 @@ def dictionary(words):
     model[f] += 1
   return set(w for w in words if w in model)
 
-def enigmaUsage():
-  print """Usage: enigma [-e | --encrypt] | [-d | --decrypt] [-u | --unknown] [-h | --help] [-k | --key cipherKey] [-r | --rotor cipherRotorNumber] "
-  -e, --encrypt                Encrypt input.  Can not be used with the -d switch.  
-  -d, --decrypt                Decrypt input.  Can not be used with the -e switch.  
-  -u, --unknown                Unknown rotor number for the given encrypted input.  
-                               Note this option only is used for decryption it has 
-                               no effect if the -e or --encrypt switchs are set.  
-  -k, --key                    Set the key used to encrypt or decrypt an input (string).  
-  -r, --rotors                 Set the number of rotors used to encrypt or decrypt an input (int).  
-  -h, --help                   Print this screen.  
-"""
-                          
-
 if __name__ == '__main__':
 
   try:
     letterlist = open(sys.argv[1]).read()
+    rootphrase = cryptanal.CryptAnal(letterlist)
+    thisshell = shell(rootphrase)
   except IndexError:
-    print 'Error, you must include a file when running this shell'
-    exit(1)
+    thisshell = shell()
 
-  rootphrase = cryptanal.CryptAnal(letterlist) 
- 
-  thisshell = shell(rootphrase)
   thisshell.mainloop()
-
