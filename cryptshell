@@ -5,8 +5,8 @@ import cryptanal
 import rotor, vigenere, substitution, freqanalysis
 
 """
-The shell class is the front end for cryptanal 
-and includes interfaces to the entire backend 
+The shell class is the front end for cryptanal
+and includes interfaces to the entire backend
 """
 class shell:
   def __init__(self, cryptobj=None):
@@ -16,7 +16,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   WW       WW  EeEeE    LL      CC       OO    OO  MM  MMM   MM  EeEeE
   WWw WW  WW   EE       LL       Cc      OOO  OOO  MM        MM  EE
    WWW  WWW    eEeEeEeE LlLlLlL   CCCCC    OOOO    MM        MM  eEeEeEeE
-  
+
                              TO CRYPTO-SHELL
   (Useful for deciphering what little Susie is writing to little Billy)
 """
@@ -24,13 +24,13 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     self.currcrypto = copy.deepcopy(cryptobj)
 
     #setup the tab completion information here
-    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load"]
+    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load", "analyze"]
     readline.set_completer(self.completer)
     readline.parse_and_bind("tab: complete")
-    
+
   ############################################
   # Below is the main front-end interface
-  # including support for gnu readline 
+  # including support for gnu readline
   # and print functions
   ############################################
 
@@ -51,6 +51,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     while 1:
       try:
         command=raw_input('> ').lstrip()
+        cmdl = command.lower()
         if command.lower().startswith('help'):
           self.help(command[4:].lstrip())
         elif command.lower().startswith('save'):
@@ -71,6 +72,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
         elif command.lower().startswith('vigenere'):
           args = command[8:].split()
           self.vigenere(args)
+        elif cmdl.startswith('analyze'):
+          args = command[7:].split()
+          self.analyze(args)
         elif command.lower().startswith('trans'):
           args = command[5:].split()
           self.transpose(args)
@@ -142,7 +146,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       #fork a new process so the graph doesn't tie up the shell
       if newpid == 0:
         #m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
-        #m.printEnglishvFreq() 
+        #m.printEnglishvFreq()
         try:
           os.execv("./freqanalysis.py", ["freqanalysis.py", pickle.dumps(self.currcrypto.getfreq())])
           raise SystemExit
@@ -170,11 +174,11 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   """
 
   ############################################
-  # Below are the Substitution an Transpose 
-  # interfaces which are common to many 
+  # Below are the Substitution an Transpose
+  # interfaces which are common to many
   # cryptographic systems
   ###########################################
-  def sub(self, args): 
+  def sub(self, args):
     #set default argumetns
     subhelp = False
     startrange = 0
@@ -218,7 +222,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   -e,--endrange		index in which to stop replacing letters
   -j,--jumpvalue	allows operation on series of values that are not necessarily next to eachother"""
 
-  def transpose(self, args): 
+  def transpose(self, args):
     #set default arguments
     transHelp = False
     shiftl = 1
@@ -304,7 +308,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       print "> Error loading file"
 
   ###########################################
-  # Front end for Substitution Cipher      
+  # Front end for Substitution Cipher
   ###########################################
   def substitution(self, args):
     try:
@@ -324,28 +328,28 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # Front end for Vigenere Cipher
   ###########################################
   def vigenere(self, args):
-    usageProblem = False	
+    usageProblem = False
     try:
       options, arguments = getopt.getopt(args, "k:edh", ["key=", "encrypt", "decrypt", "help"])
     except getopt.GetoptError, err:
-      usageProblem = True    
-    if usageProblem == False:   
-      key = "default"   
-      encrypt = 0 
-      decrypt = 0 
-      doVigenere = False  
-      help = 0  
+      usageProblem = True
+    if usageProblem == False:
+      key = "default"
+      encrypt = 0
+      decrypt = 0
+      doVigenere = False
+      help = 0
       for o, a in options:
 	if o in ("-e", "--encrypt"):
-	  doVigenere = True	
-	  encrypt = 1      
+	  doVigenere = True
+	  encrypt = 1
 	elif o in ("-d", "--decrypt"):
 	  doVigenere = True
-	  decrypt = 1	
+	  decrypt = 1
 	elif o in ("-k", "--key"):
-          key = a	
+          key = a
         elif o in ("-h", "--help"):
-          help = 1	
+          help = 1
       if help == 1:
         self.vigUsage()
       if doVigenere is True:
@@ -356,10 +360,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
             self.vigUsage()
 	  elif encrypt == 1:
 	    res = vig.cypher()
-	    self.currcrypto.setcrypt(res)		 
+	    self.currcrypto.setcrypt(res)
 	  elif decrypt == 1:
 	    res = vig.decypher()
-	    self.currcrypto.setcrypt(res)	
+	    self.currcrypto.setcrypt(res)
         except AttributeError:
           print "Please load a file first by typing \"load <file-name>\""
       else:
@@ -368,34 +372,34 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
 
   ###########################################
   # Usage for vigenere commands
-  ###########################################  
+  ###########################################
   def vigUsage(self):
     print """Usage: vigenere [-e | --encrypt] | [-d | --decrypt] [-h | --help] [-k | --key cipherKey] "
-    -e, --encrypt                Encrypt input.  Can not be used with the -d switch.  
-    -d, --decrypt                Decrypt input.  Can not be used with the -e switch.  
-    -k, --key                    Set the key used to encrypt or decrypt an input (string). If not used, key="default"  
-    -h, --help                   Print this screen.  
+    -e, --encrypt                Encrypt input.  Can not be used with the -d switch.
+    -d, --decrypt                Decrypt input.  Can not be used with the -e switch.
+    -k, --key                    Set the key used to encrypt or decrypt an input (string). If not used, key="default"
+    -h, --help                   Print this screen.
     """
-	
+
   ###########################################
   # Front end for Enigma cipher
   ###########################################
-  def enigma(self, args): 
-    # Default values needed for syntax checking and -h options. 
+  def enigma(self, args):
+    # Default values needed for syntax checking and -h options.
     encipher = 0
     decipher = 0
     enigmaU = False
-    # The next section parses the arguments "args" grabed from the command line and passed down from the shell.  
+    # The next section parses the arguments "args" grabed from the command line and passed down from the shell.
     try:
       options, arguments = getopt.getopt(args, "r:k:eduh", ["key=", "rotors=", "encrypt", "decrypt", "unknown", "help"])
     except getopt.GetoptError, err:
       # this exception is executed if there is an option passed that is not defined.  Normally this would have an exit,
-      # or there would be an exit in the usage and you would call the usage here.  
+      # or there would be an exit in the usage and you would call the usage here.
       enigmaU = True
     # Since Python does not have a goto command and I don't want to exit the shell I set a variable that makes most of
-    # the code get skipped if there is a usage problem.  
+    # the code get skipped if there is a usage problem.
     if enigmaU is not True:
-      # Default settings for the cipher program.  
+      # Default settings for the cipher program.
       keys = "default"
       kVar = False
       rotors = 3
@@ -425,15 +429,15 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
           if rVar is True and kVar is True:
             enigmaU = True
         elif enigmaU is True:
-          # this conditional breaks out of the for loop if the help options is called.  
+          # this conditional breaks out of the for loop if the help options is called.
           break
         else:
           # this conditional sets the usage flag and breaks out of the for loop if there is an unhandled condtion
-          # in the command line.  
+          # in the command line.
           enigmaU = True
           break
       if encipher and decipher:
-        # this conditional flags if the -e and -d are both called.  They are mutually exclusive.  
+        # this conditional flags if the -e and -d are both called.  They are mutually exclusive.
         print "The -e and -d/u are mutually exclusive.  "
         enigmaU = True
       try:
@@ -466,7 +470,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
             print "Please load a file first by typing \"load <file-name>\""
         else:
           # This loop will need to be run when searching for a decryptions configuration
-          # loop through more than one word in a string.  
+          # loop through more than one word in a string.
           percent = 0.0
           decriptIterator = 0
           while percent < 50 and decriptIterator < 20:
@@ -502,6 +506,22 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     -r, --rotors                 Set the number of rotors used to encrypt or decrypt an input (int).
     -h, --help                   Print this screen.
   """
+
+  ###########################################
+  # Entrypoint for command: analyze
+  ###########################################
+  def analyze(self, args):
+    print args
+    if args:
+      self.analyzeUsage()
+
+  ###########################################
+  # Usage for command: analyze
+  ###########################################
+  def analyzeUsage(self):
+    print """Usage: "analyze"
+    Analyzes currently open file for hints as to its encryption.
+    """
 
 def dictionary(words):
   model = collections.defaultdict(lambda: 1)
