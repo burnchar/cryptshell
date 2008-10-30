@@ -299,6 +299,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       rootphrase = cryptanal.CryptAnal(letterlist)
       self.rootcrypto = rootphrase
       self.currcrypto = copy.deepcopy(rootphrase)
+      print args[0] + " opened\n"
     except IndexError:
       print "> Error loading file"
 
