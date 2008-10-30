@@ -108,6 +108,7 @@ class xfrequencyTable():
     plt.show()   
 
 if __name__ == "__main__":
+  import cryptanal, pickle, sys
   #this is just a stupid table here for demonstration
   cipherFreqTable = {
     'r': .08167,
@@ -136,6 +137,8 @@ if __name__ == "__main__":
     'B': 0,
     'C': 0,
     'E': .1 }
+  
+  cipherFreqTable = pickle.loads(sys.argv[1])
 
   m = xfrequencyTable(cipherFreqTable)
   m.printEnglishvFreq()  

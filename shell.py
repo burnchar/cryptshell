@@ -122,21 +122,22 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   # will be added later.
   ############################################
   def PrintGraph(self):
-    try:
-      import freqanalysis, os
+  #  try:
+      import freqanalysis, os, signal, pickle
       newpid = os.fork()
       #fork a new process so the graph doesn't tie up the shell
       if newpid == 0:
-        m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
-        m.printEnglishvFreq() 
-        sys.exit()
-    except SystemExit:
-      print "graph exited" 
-      sys.exit()
-    except:
-      print """Error: check that numpy and matplotlib are installed
-    you also probably can't use windows because there is a fork"""
-      print sys.exc_info()[0]
+        #m = freqanalysis.xfrequencyTable(self.currcrypto.getfreq())
+        #m.printEnglishvFreq() 
+        os.execv("./freqanalysis.py", ["freqanalysis.py", pickle.dumps(self.currcrypto.getfreq())])
+        raise SystemExit
+  #  except SystemExit:
+  #    print "graph exited" 
+  #    sys.exit()
+  #  except:
+  #    print """Error: check that numpy and matplotlib are installed
+  #  you also probably can't use windows because there is a fork"""
+  #    print sys.exc_info()[0]
 
   ############################################
   # Usage for the different print options
