@@ -49,38 +49,42 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
   ############################################
   def mainloop(self):
     while 1:
-      command=raw_input('> ').lstrip()
-      if command.lower().startswith('help'):
-        self.help(command[4:].lstrip())
-      elif command.lower().startswith('save'):
-        self.save(command[4:].lstrip())
-      elif command.lower().startswith('revert'):
-        self.Revert(command[6:].strip())
-      elif command.lower().startswith('print'):
-        self.Print(command[5:].strip())
-      elif command.lower().startswith('substitution'):
-        args = command[12:].split()
-        self.substitution(args)
-      elif command.lower().startswith('sub'):
-        args = command[3:].split()
-        self.sub(args)
-      elif command.lower().startswith('enigma'):
-        args = command[6:].split()
-        self.enigma(args)
-      elif command.lower().startswith('vigenere'):
-        args = command[8:].split()
-        self.vigenere(args)
-      elif command.lower().startswith('trans'):
-        args = command[5:].split()
-        self.transpose(args)
-      elif command.lower().startswith('load') or command.lower().startswith('open'):
-        args = command[4:].split()
-        self.load(args)
-      elif command.strip().lower() == "quit" or command.strip().lower() == "exit":
-        print "come again soon...  "
+      try:
+        command=raw_input('> ').lstrip()
+        if command.lower().startswith('help'):
+          self.help(command[4:].lstrip())
+        elif command.lower().startswith('save'):
+          self.save(command[4:].lstrip())
+        elif command.lower().startswith('revert'):
+          self.Revert(command[6:].strip())
+        elif command.lower().startswith('print'):
+          self.Print(command[5:].strip())
+        elif command.lower().startswith('substitution'):
+          args = command[12:].split()
+          self.substitution(args)
+        elif command.lower().startswith('sub'):
+          args = command[3:].split()
+          self.sub(args)
+        elif command.lower().startswith('enigma'):
+          args = command[6:].split()
+          self.enigma(args)
+        elif command.lower().startswith('vigenere'):
+          args = command[8:].split()
+          self.vigenere(args)
+        elif command.lower().startswith('trans'):
+          args = command[5:].split()
+          self.transpose(args)
+        elif command.lower().startswith('load') or command.lower().startswith('open'):
+          args = command[4:].split()
+          self.load(args)
+        elif command.strip().lower() == "quit" or command.strip().lower() == "exit":
+          print "come again soon...  "
+          sys.exit()
+        else:
+          print "Error: command not recognized: type 'help' for usage"
+      except KeyboardInterrupt:
+        print "come again soon... "
         sys.exit()
-      else:
-        print "Error: command not recognized: type 'help' for usage"
 
   ############################################
   # This is the main help function
