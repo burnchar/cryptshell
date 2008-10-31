@@ -518,6 +518,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       self.analyzeUsage()
 
     crypt = self.currcrypto.getcrypt()
+    dict = self.currcrypto.getfreq()
+    print dict
+
 
   ###########################################
   # Usage for command: analyze
