@@ -25,7 +25,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     self.currcrypto = copy.deepcopy(cryptobj)
 
     #setup the tab completion information here
-    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load", "analyze"]
+    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load", "analyze", "suggestsub"]
     readline.set_completer(self.completer)
     readline.parse_and_bind("tab: complete")
 
@@ -78,6 +78,13 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
         elif cmdl.startswith('analyze'):
           args = command[7:].split()
           self.analyze(args)
+        elif cmdl.startswith('suggestsub'):
+          args = command[10:].split()
+          if args:
+            self.suggestsub(args[0])
+          else:
+            print "No language specified. Using English."
+            self.suggestsub("english")
         elif command.lower().startswith('trans'):
           args = command[5:].split()
           self.transpose(args)
@@ -528,14 +535,10 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     if args:
       self.analyzeUsage()
 
-    #crypt = self.currcrypto.getcrypt()
-    #self.currcrypto.freqlist.sort(reverse = True)
-    #f = self.currcrypto.freqlist
-
     freq_current = list()
     dict = self.currcrypto.getfreq()
     for key in dict.keys():
-      if key.lower() in string.lowercase:\
+      if key.lower() in string.lowercase:
         freq_current.append(dict[key])
     freq_current.sort(reverse=True)
 
@@ -551,7 +554,6 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
       'Swedish' : self.getDictAsList(freqanalysis.SwedishFreqTable)
     }
 
-
     # Gets the delta (difference) between the frequency of the x'th
     # letter in the current crypted file and the x'th letter in each
     # supported language, then adds all of the deltas.
@@ -565,6 +567,8 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
         delta_dict[key] = abs(a - b)
     print 'done.'
 
+    sortedDelta = sorted(delta_dict.items(), key = itemgetter(1))
+
     # Maximum total delta for crypted text which is likely to be
     # substitution-cipher'ed text using the Roman alphabet.
     # Some example values deltas for context:
@@ -575,16 +579,19 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     # The default value 0.001 is an educated guess.
     maxProbableDelta = 0.001
 
-    if min(delta_dict.items()) >= maxProbableDelta:
+    if sortedDelta[-1][1] >= maxProbableDelta:
       print """
-According to statistical analysis, current crypted data is probably not
+*According to statistical analysis, current crypted data is probably not
 encrypted with a substitution cipher. That being said..."""
       print """Substitution-encrypted text may be in one of the following languages
 in decreasing order of likelihood:
 ---------------------------------------------------------------
 LANGUAGE   SCORE"""
 
-    for lang, delta in sorted(delta_dict.items(), key = itemgetter(1)):
+    for lang, delta in sortedDelta:
+      # probabilityStrength is an inverse of delta.
+      # It's just to give users a "bigger is better" number to help
+      # quantify how close different languages are.
       probabilityStrength = 0.01 / delta_dict[lang]
       print lang.ljust(10), '%5.1f' % probabilityStrength
 
@@ -592,11 +599,45 @@ LANGUAGE   SCORE"""
     print "---------------------------------------------------------------"
 
 
+  # Suggest a single-character substitution based on relative frequency of letters
+  # Arguments:
+  #  langDict: Dictionary of letter:frequency in chosen language (see freqanalysis.py)
+  #  limit: Display at most this many suggestions
+  def suggestsub(self, lang):
+     # There should be a global distionary of language frequencies somewhere
+    if lang.lower().startswith('english')  : langDict = freqanalysis.EnglishFreqTable
+    elif lang.lower().startswith('french')  : langDict = freqanalysis.FrenchFreqTable
+    elif lang.lower().startswith('german')  : langDict = freqanalysis.GermanFreqTable
+    elif lang.lower().startswith('spanish') : langDict = freqanalysis.SpanishFreqTable
+    elif lang.lower().startswith('italian') : langDict = freqanalysis.ItalianFreqTable
+    elif lang.lower().startswith('turkish') : langDict = freqanalysis.TurkishFreqTable
+    elif lang.lower().startswith('swedish') : langDict = freqanalysis.SwedishFreqTable
+    else:
+      print "Invalid language selected."
+      return
+
+    cryptDict = {}
+    fullDict = self.currcrypto.getfreq()
+    for key in fullDict.keys():
+      if key.lower() in string.lowercase:
+        cryptDict[key] = fullDict[key]
+
+    retval = {}
+    sortedCrypt = sorted(cryptDict.items(), key = itemgetter(1), reverse = True)
+    sortedLang = sorted(langDict.items(), key = itemgetter(1), reverse = True)
+    print "Suggested substitutions (be sure to run analyze command first!):"
+    for c, l in zip(sortedCrypt, sortedLang):
+      retval[c] = l[0]
+      print "Try replacing '" + c[0] + "' with '" + l[0] + "'"
+    return retval
+
+# Returns items (not keys) in dictionary as descending list.
+# This function can be replaced with short inline Python code later.
   def getDictAsList(self, Dict):
     retval = list()
     for key in Dict.keys():
       retval.append(Dict[key])
-    retval.sort(reverse=True)
+    retval.sort(reverse = True)
     return retval
 
 
