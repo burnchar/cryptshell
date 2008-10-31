@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import readline, sys, copy, getopt, collections, re
+import readline, sys, copy, getopt, collections, re, string
 import cryptanal
+from operator import itemgetter
 import rotor, vigenere, substitution, freqanalysis
 
 """
@@ -511,15 +512,96 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
 
   ###########################################
   # Entrypoint for command: analyze
+  # This should eventually be split up into several classes
+  # and do a lot more. Right now, it only analyzes single-character substitution.
+  # It also makes several assumptions, which may not be correct:
+  # 1) Only letters are substituted
+  # 2) All letters are substituted by only letters (but they can be any case)
+  #     Spaces, punctuation, numbers, etc. are ignored
+  # 3) The crypted data is large enough to do a meaningful frequency analysis.
+  # 4) The crypted file is in a language which uses a Roman alphabet.
+  #
+  # Obviously there's a nearly unlimited amount of functionality that could be
+  # added to the encryption analysis.
   ###########################################
   def analyze(self, args):
-    print args
     if args:
       self.analyzeUsage()
 
-    crypt = self.currcrypto.getcrypt()
+    #crypt = self.currcrypto.getcrypt()
+    #self.currcrypto.freqlist.sort(reverse = True)
+    #f = self.currcrypto.freqlist
+
+    freq_current = list()
     dict = self.currcrypto.getfreq()
-    print dict
+    for key in dict.keys():
+      if key.lower() in string.lowercase:\
+        freq_current.append(dict[key])
+    freq_current.sort(reverse=True)
+
+    # The key used to be the language code (e.g. 'en', 'tr', etc.)
+    # but it turns out the key is convenient for on-screen display.
+    freq_dict = {
+      'English' : self.getDictAsList(freqanalysis.EnglishFreqTable),
+      'French' : self.getDictAsList(freqanalysis.FrenchFreqTable),
+      'German' : self.getDictAsList(freqanalysis.GermanFreqTable),
+      'Spanish' : self.getDictAsList(freqanalysis.SpanishFreqTable),
+      'Italian' : self.getDictAsList(freqanalysis.ItalianFreqTable),
+      'Turkish' : self.getDictAsList(freqanalysis.TurkishFreqTable),
+      'Swedish' : self.getDictAsList(freqanalysis.SwedishFreqTable)
+    }
+
+
+    # Gets the delta (difference) between the frequency of the x'th
+    # letter in the current crypted file and the x'th letter in each
+    # supported language, then adds all of the deltas.
+    # Theoretically, languages with a smaller delta are more likely
+    # to be the language of the unencrypted file.
+    delta_dict = {}
+    print "Currently comparing current crypted data against: ",
+    for key in freq_dict.keys():
+      print key + ',',
+      for a, b in zip(freq_dict[key], freq_current):
+        delta_dict[key] = abs(a - b)
+    print 'done.'
+
+    # Maximum total delta for crypted text which is likely to be
+    # substitution-cipher'ed text using the Roman alphabet.
+    # Some example values deltas for context:
+    # Crypted text is English? Delta between text and English distribution
+    # is likely < 0.0002.
+    # Crypted text is random, or encrypted with something strong like AES?
+    # Delta is likely to be > 0.003
+    # The default value 0.001 is an educated guess.
+    maxProbableDelta = 0.001
+
+    if min(delta_dict.items()) >= maxProbableDelta:
+      print """
+According to statistical analysis, current crypted data is probably not
+encrypted with a substitution cipher. That being said..."""
+      print """Substitution-encrypted text may be in one of the following languages
+in decreasing order of likelihood:
+---------------------------------------------------------------
+LANGUAGE   SCORE"""
+
+    for lang, delta in sorted(delta_dict.items(), key = itemgetter(1)):
+      probabilityStrength = 0.01 / delta_dict[lang]
+      print lang.ljust(10), '%5.1f' % probabilityStrength
+
+    print "Scores > 40 are likely candidates. Scores < 15 are very unlikely."
+    print "---------------------------------------------------------------"
+
+
+  def getDictAsList(self, Dict):
+    retval = list()
+    for key in Dict.keys():
+      retval.append(Dict[key])
+    retval.sort(reverse=True)
+    return retval
+
+
+
+
 
 
   ###########################################

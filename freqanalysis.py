@@ -36,9 +36,10 @@ EnglishFreqTable = {
   'y': .01974,
   'z': .00074 }
 
-# Table of frequency of french characters.
-# There are more characters in the French alphabet,
-# but some terminals cannot display them, and they are fairly infrequent.
+# Tables of frequency for non-English languages.
+# Each of these has more characters available than the standard English 26,
+# but some terminals cannot display them, and most (but not all) are fairly infrequent.
+
 FrenchFreqTable = {
   'a': 	.07636,
   'b': 	.00901,
@@ -65,7 +66,7 @@ FrenchFreqTable = {
   'w': 	.00114,
   'x': 	.00387,
   'y': 	.00308,
-  'z': 	.00136
+  'z': 	.00136,
 }
 
 SpanishFreqTable = {
