@@ -51,10 +51,36 @@ class CryptAnal():
     templist[endrange] = tempvar
     self.letterlist = "".join(templist)
 
+  #this function checks the current letters to see if they are printable or not
+  def checksifPrintable(self):
+    canprintAscii = True
+    print "bleh"
+    for i in self.letterlist:
+      if ord(i) <= 6 or (ord(i) >= 16 and ord(i) <= 31):
+        canprintAscii = False
+    return canprintAscii
+
+  #this prints the letters in the list
+  def printcrypt(self):
+    #see if letters are printable or not
+    canprintAscii = self.checksifPrintable()
+    #canprintAscii = True
+    print "Hiya"
+    if canprintAscii:
+      #all characters can be printed to the screen
+      print self.letterlist
+    else:
+      #there are some weird chars in this text
+      print "There are some weird chars in this text so I can't print it out as ascii"
+      print "Printing in hex..."
+      for i in self.letterlist:
+        print "%#x" % ord(i),
+  
+  """
   #this prints the letters in the list
   def printcrypt(self):
     print self.letterlist
-
+  """
   #print a sorted count of all letters 
   #this needs work - should be able to sort on multiple items, have different indices, etc
   #def printsorteddict(self, letterlist=None, startrange=0, endrange=None, jumpval=1):
