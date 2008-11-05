@@ -12,14 +12,17 @@ class ADFGVX:
     self.worktext = worktext
     self.transposekey = transposekey
 
-  def encrypt(self):
-    print "ADFGVX encryption subshell."
+  def showenviron(self):
+    print
+    print "Current ADFGVX work environment"
+    print "-------------------------------"
     print "Base Alphabet:",
     print self.base_alphabet
-    print "\nBlock Cipher:"
+    print
+    print "Block Cipher:"
     print "   ADFGVX"
     print "   ------"
-    print "A|"
+    print "A|",
     print "".join(self.alpha_key[0])
     print "D|",
     print "".join(self.alpha_key[1])
@@ -31,11 +34,11 @@ class ADFGVX:
     print "".join(self.alpha_key[4])
     print "X|",
     print "".join(self.alpha_key[5])
+    print
 
+  def encrypt(self):
     plain_string=self.worktext.lstrip().rstrip().lower()
     trans_string=self.transposekey.lstrip().rstrip().lower()
-
-    print "Parsing input string..."
 
     key_string = ""
     for i in range(0,len(plain_string)):
@@ -58,11 +61,6 @@ class ADFGVX:
     key_len = len(key_string_new)
     key_pos = 0
 
-    for i in range(0,len(trans_string)):
-      print trans_string[i],
-    print
-    print "- - - - - -"
-
     msg_block_c = list()
     while key_pos < key_len:
       cur_line = ""
@@ -75,7 +73,6 @@ class ADFGVX:
           break
         key_pos = key_pos + 1
       cur_line = cur_line.rstrip()
-      print cur_line
       msg_block_c.append(cur_list)
 
     trans_list = list()
@@ -95,11 +92,6 @@ class ADFGVX:
 
     trans_list.sort()
     sorted_string = "".join(trans_list)
-    print
-    for i in range(0,len(sorted_string)):
-      print sorted_string[i],
-    print
-    print "- - - - - -"
 
     msg_block_t = list()
     for i in range(0,len(msg_block_c)):
@@ -113,7 +105,6 @@ class ADFGVX:
           cur_line = cur_line + "  "
           cur_list.append(" ")
           pass
-      print cur_line
       msg_block_t.append(cur_list)
 
     final_string = ""
@@ -126,35 +117,13 @@ class ADFGVX:
             pass
       final_string = final_string + " "
 
-    print 
-    print "Encrypted message string is: " + final_string
     return final_string
 
 
   def decrypt(self):
-    print "ADFGVX decryption subshell."
-    print "Base Alphabet:",
-    print self.base_alphabet
-    print "\nBlock Cipher:"
-    print "   ADFGVX"
-    print "   ------"
-    print "A|",
-    print "".join(self.alpha_key[0])
-    print "D|",
-    print "".join(self.alpha_key[1])
-    print "F|",
-    print "".join(self.alpha_key[2])
-    print "G|",
-    print "".join(self.alpha_key[3])
-    print "V|",
-    print "".join(self.alpha_key[4])
-    print "X|",
-    print "".join(self.alpha_key[5])
-
     cypher_string=self.worktext.lstrip().rstrip().lower()
     trans_string=self.transposekey.lstrip().rstrip().lower()
 
-    print "Decrypting..."
     cypher_list = cypher_string.split(" ")
 
     trans_list = list()
@@ -181,23 +150,11 @@ class ADFGVX:
 
 
     sorted_string = "".join(sorted_list)
-    print
-    for i in range(0,len(sorted_string)):
-      print sorted_string[i],
-    print
-    print "- - - - - -"
 
     for i in range(0, max_line_len):
       cur_line = ""
       for j in range(0, len(sorted_string)):
         cur_line = cur_line + msg_block_d[sorted_string[j]][i] + " "
-      print cur_line
-
-    print
-    for i in range(0,len(trans_string)):
-      print trans_string[i],
-    print
-    print "- - - - - -"
 
     index_string = ""
     for i in range(0, max_line_len):
@@ -205,7 +162,6 @@ class ADFGVX:
       for j in range(0, len(trans_string)):
         cur_line = cur_line + msg_block_d[trans_string[j]][i] + " "
         index_string = index_string + msg_block_d[trans_string[j]][i]
-      print cur_line
     index_string.rstrip()
 
     final_string = ""
@@ -219,8 +175,6 @@ class ADFGVX:
       except ValueError:
         pass
 
-    print
-    print "Decrypted message string is: " + final_string
     return final_string
 
 if __name__ == '__main__':
@@ -228,6 +182,7 @@ if __name__ == '__main__':
   transKey = sys.argv[2]
 
   myADFGVX = ADFGVX(textToHandle, transKey)
+  myADFGVX.showenviron()
   cryptString = myADFGVX.encrypt()
   print "Encrypt: ", textToHandle, " -> ", cryptString
   
