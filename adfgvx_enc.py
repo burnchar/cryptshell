@@ -32,16 +32,21 @@ print "Parsing input string..."
 
 key_string = ""
 for i in range(0,len(plain_string)):
+#  ignore_flag = 0
+  char_loc_c = 0
+  char_loc_r = 0
   to_match = plain_string[i]
   for j in range(0, len(alpha_key)):
 #    print "checking keyrow " + str(j) + ":" + "".join(alpha_key[j]) + " for " + to_match
     try:
       char_loc_c = alpha_key[j].index(to_match)
       char_loc_r = j
+      key_string = key_string + letter_key[char_loc_r] + letter_key[char_loc_c] + " "
     except ValueError:
       pass
 #  print "Location of " + to_match + " is " + letter_key[char_loc_r] + "" + letter_key[char_loc_c]
-  key_string = key_string + letter_key[char_loc_r] + letter_key[char_loc_c] + " "
+#  print "ignore flag is: " + str(ignore_flag)
+#  key_string = key_string + letter_key[char_loc_r] + letter_key[char_loc_c] + " "
 
 key_string = key_string.rstrip()
 #print "Intermediate key string for message is: " + key_string
