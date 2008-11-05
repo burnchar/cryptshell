@@ -3,7 +3,7 @@
 import readline, sys, copy, getopt, collections, re, string
 import cryptanal
 from operator import itemgetter
-import rotor, vigenere, substitution, freqanalysis
+import rotor, vigenere, substitution, freqanalysis, adfgvx
 
 """
 The shell class is the front end for cryptanal
@@ -25,7 +25,7 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     self.currcrypto = copy.deepcopy(cryptobj)
 
     #setup the tab completion information here
-    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load", "analyze", "suggestsub"]
+    self.commands = ["help", "print", "save", "revert", "open", "sub", "trans", "quit", "enigma", "vigenere", "substitution", "load", "analyze", "suggestsub", "adfgvx"]
     readline.set_completer(self.completer)
     readline.parse_and_bind("tab: complete")
 
@@ -75,6 +75,9 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
         elif command.lower().startswith('vigenere'):
           args = command[8:].split()
           self.vigenere(args)
+        elif command.lower().startswith('adfgvx'):
+          args = command[6:].split()
+          self.adfgvx(args)
         elif cmdl.startswith('analyze'):
           args = command[7:].split()
           self.analyze(args)
@@ -388,6 +391,58 @@ WWW         WW eEeEeEeE LL        CCCCC    OOOO    MMMM    MMMM  eEeEeEeE
     -e, --encrypt                Encrypt input.  Can not be used with the -d switch.
     -d, --decrypt                Decrypt input.  Can not be used with the -e switch.
     -k, --key                    Set the key used to encrypt or decrypt an input (string). If not used, key="default"
+    -h, --help                   Print this screen.
+    """
+
+  def adfgvx(self, args):
+    usageProblem = False
+    try:
+      options, arguments = getopt.getopt(args, "t:edh", ["transposekey=", "encrypt", "decrypt", "help"])
+    except getopt.GetoptError, err:
+      usageProblem = True
+    if usageProblem == False:
+      transposekey = "default"
+      encrypt = 0
+      decrypt = 0
+      doADFGVX = False
+      help = 0
+      for o, a in options:
+        if o in ("-e", "--encrypt"):
+          doADFGVX = True
+          encrypt = 1
+        elif o in ("-d", "--decrypt"):
+          doADFGVX = True
+          decrypt = 1
+        elif o in ("-t", "--transposekey"):
+          transposekey = a
+        elif o in ("-h", "--help"):
+          help = 1
+      if help == 1:
+        self.ADFGVXUsage()
+      if doADFGVX is True:
+        try:
+          myADFGVX = adfgvx.ADFGVX(self.currcrypto.getcrypt().strip(), transposekey)
+          if encrypt == 1 and decrypt == 1:
+            self.ADFGVXUsage()
+          elif encrypt == 1:
+            res = myADFGVX.encrypt()
+            self.currcrypto.setcrypt(res)
+          elif decrypt == 1:
+            res = myADFGVX.decrypt()
+            self.currcrypto.setcrypt(res)
+        except AttributeError:
+          print "Please load a file first by typing \"load <file-name>\""
+      else:
+        self.ADFGVXUsage()
+
+  ###########################################
+  # Usage for ADFGVX commands
+  ###########################################
+  def ADFGVXUsage(self):
+    print """Usage: adfgvx [-e | --encrypt] | [-d | --decrypt] [-h | --help] [-t | --transposekey Key] "
+    -e, --encrypt                Encrypt input.  Can not be used with the -d switch.
+    -d, --decrypt                Decrypt input.  Can not be used with the -e switch.
+    -t, --transposekey           Set the key used to encrypt or decrypt an input (string). If not used, transposekey="default"
     -h, --help                   Print this screen.
     """
 
