@@ -40,15 +40,22 @@ class Vigenere:
       # set the letter to crypt	
       letterToCrypt = toEncrypt[i]
       # set the corresponding key
-      keyLetter = self.finalKey[i]
+      keyLetter = self.finalKey[i].lower()
   
-      if letterToCrypt == " ":
-        cryptedString += " "
+      if letterToCrypt.isdigit():
+	cryptedString += letterToCrypt      
+      elif letterToCrypt == " ":
+        cryptedString += letterToCrypt
       else:
         #letter crypted = the letter in the junction in the  matrix 
         #of the letter to encrypt and the corresponding key letter  
         #the letters list helps to match a letter and its index
-        cryptedString += self.m[self.letters.index(letterToCrypt)][self.letters.index(keyLetter)]
+	if letterToCrypt.isupper():
+	  #if letter is upper, find solution zith lower letter then cast in big letter	
+	  letterToCrypt = letterToCrypt.lower()	
+          cryptedString += self.m[self.letters.index(letterToCrypt)][self.letters.index(keyLetter)].upper()
+	else:
+	  cryptedString += self.m[self.letters.index(letterToCrypt)][self.letters.index(keyLetter)]
     	
     return  cryptedString	
 
@@ -60,18 +67,23 @@ class Vigenere:
       # set the letter to decode
       letterToDecode = cryptedString[i]
       # set the corresponding key
-      keyLetter = self.finalKey[i]
+      keyLetter = self.finalKey[i].lower()
 
-      if letterToDecode == " ":
-        decodedString += " "
+      if letterToDecode.isdigit():   
+	decodedString += letterToDecode      
+      elif letterToDecode == " ":
+        decodedString += letterToDecode
       else:
         #select column of keyletter	  
         col = self.letters.index(keyLetter)
         #find row where letter to decode is
         for i in range(0,25):
-          if self.m[i][col] == letterToDecode:    
-	    #letter decoded = first letter of the row      
-	    decodedString += self.m[i][0]
+          if self.m[i][col] == letterToDecode.lower():    
+	    #letter decoded = first letter of the row
+	    if letterToDecode.isupper():      
+	      decodedString += self.m[i][0].upper()
+	    else:
+	      decodedString += self.m[i][0]    
     return decodedString
 
 if __name__ == '__main__':
