@@ -1,0 +1,1 @@
+cryptshell is a shell used for analyzable code (eg anything before wwII). It automates letter substitution, transposition, and has modules useful for breaking various weak ciphers (enigma, substitution, vinigre). It has no real practical value.
